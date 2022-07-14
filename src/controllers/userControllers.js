@@ -13,17 +13,17 @@ const isValid = function (value) {
 };
 
 
+        //======+++++++++========+++++++=========={ Create User }======+++++++========++++++++==========//
+
 const createUser = async function (req, res) {
     try {
         const data = req.body;
         const { title, name, phone, email, password, address } = data
         if (Object.keys(data) == 0) return res.status(400).send({ status: false, message: "please enter details" })
 
-        if (!isValid(title)) {
-            return res.status(400).send({ status: false, message: "title is required" })
-        } else if (title != 'Mr' && title != 'Mrs' && title != 'Miss') {
-            return res.status(400).send({ status: false, message: "Invalid Title : Valid titles : Mr, Miss, Mrs" })
-        }
+        if (!isValid(title))   return res.status(400).send({ status: false, message: "title is required" })
+        if (title != 'Mr' && title != 'Mrs' && title != 'Miss') {
+            return res.status(400).send({ status: false, message: "Invalid Title : Valid titles : Mr, Miss, Mrs" })}
 
         if (!isValid(name)) return res.status(400).send({ status: false, message: "please enter name" })
 
@@ -54,11 +54,13 @@ const createUser = async function (req, res) {
 
         let user = await userModel.create(data)
         res.status(201).send({ status: true, message: "Success", data: user })
+
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
 
+        //======+++++++++========+++++++=========={ Login User }======+++++++========++++++++==========//
 
 const userLogin = async function (req, res) {
     try {
@@ -92,5 +94,6 @@ const userLogin = async function (req, res) {
 }
 
 
+        //======+++++++++========+++++++=========={ Exports }======+++++++========++++++++==========//
 
-module.exports = { createUser, userLogin, isValid }
+module.exports = { createUser, userLogin }

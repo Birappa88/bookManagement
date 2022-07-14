@@ -13,6 +13,7 @@ const isValid = function (value) {
     return true;
 };
 
+        //======+++++++++========+++++++=========={ Create Book }======+++++++========++++++++==========//
 
 const createBook = async function (req, res) {
     try {
@@ -48,14 +49,6 @@ const createBook = async function (req, res) {
         if (releasedAt === null || releasedAt === undefined || releasedAt.trim().length == 0) return res.status(400).send({ status: false, message: "please enter date of release" })
         if (!myDate.test(releasedAt)) return res.status(400).send({ status: false, message: "please enter date in yyyy-mm-dd format only" })
 
-        // if(files && files.length>0){
-        //     //upload to s3 and get the uploaded link
-        //     // res.send the link back to frontend/postman
-        //     var uploadedFileURL= await route.uploadFile( files[0] )
-        // }
-
-        //  data.bookCover = "uploadedFileURL"
-        //======================================Creating user==========================//
         let book = await bookModel.create(data)
         return res.status(201).send({ status: true, message: "Success", data: book })
 
@@ -63,6 +56,9 @@ const createBook = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+
+
+        //======+++++++++========+++++++=========={ Get Books }======+++++++========++++++++==========//
 
 const getBooks = async function (req, res) {
     try {
@@ -90,18 +86,26 @@ const getBooks = async function (req, res) {
 }
 
 
+        //======+++++++++========+++++++=========={ Get Book with Reviews }======+++++++========++++++++==========//
+
 const getBookWithReviews = async function (req, res) {
     try {
         const bookId = req.params.bookId
         if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "invalid BookId" })
+
         const existingBook = await bookModel.findOne({_id:bookId , isDeleted: false}).lean()
         if (!existingBook) return res.status(404).send({ status: false, message: "No such book present" })
+
         const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false })
         existingBook.reviewsData = reviewsData
+
         return res.status(200).send({ status: true, message: 'Books list', data: existingBook })
+
     } catch (err) { return res.status(500).send({ status: false, message: err.message }) }
 }
 
+
+        //======+++++++++========+++++++=========={ Update Book }======+++++++========++++++++==========//
 
 const updateBook = async function (req, res) {
     try {
@@ -112,7 +116,6 @@ const updateBook = async function (req, res) {
         if (!existingBook) return res.status(404).send({ status: false, message: "No such book present" })
 
         const data = req.body
-
         const title = data.title;
         
         if (title != null) {
@@ -139,7 +142,6 @@ const updateBook = async function (req, res) {
             if (releasedAt === null || releasedAt === undefined || releasedAt.trim().length === 0) return res.status(400).send({ status: false, message: "please enter date of release" })
             if (!myDate.test(releasedAt)) return res.status(400).send({ status: false, message: "release date should be in yyyy-mm-dd format only" })
         }
-
         const myFilter = {
             _id: bookId,
             isDeleted: false
@@ -153,6 +155,8 @@ const updateBook = async function (req, res) {
     }
 }
 
+
+        //======+++++++++========+++++++=========={ Delete Book }======+++++++========++++++++==========//
 
 const deleteBook = async function (req, res) {
     try {
@@ -171,5 +175,7 @@ const deleteBook = async function (req, res) {
     }
 }
 
+
+        //======+++++++++========+++++++=========={ Exports }======+++++++========++++++++==========//
 
 module.exports = { createBook, getBooks, updateBook, deleteBook, getBookWithReviews }

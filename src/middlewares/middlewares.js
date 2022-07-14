@@ -1,20 +1,21 @@
 const jwt = require("jsonwebtoken");
 const bookModel = require("../models/booksModel.js");
 
-//================================[ Authentication ]=======================================//
+
+//======+++++++++========+++++++=========={ Authentication }======+++++++========++++++++==========//
+
 const isTokenValid = function (req, res, next) {
     try {
         let token = req.headers["x-api-key"]
 
         if (!token) return res.status(401).send({ status: false, message: "token is not present" })
 
-        jwt.verify(token, "Project3-78",(err, decoded) => {
+        jwt.verify(token, "Project3-78", (err, decoded) => {
             if (err) {
                 res.status(401).send({ status: false, Error: err.message })
             }
             req.token = decoded
         })
-
         next()
 
     } catch (err) {
@@ -23,7 +24,8 @@ const isTokenValid = function (req, res, next) {
 }
 
 
-//=====================================[ Authorisation ]=======================================//
+//======+++++++++========+++++++=========={ Authorisation }======+++++++========++++++++==========//
+
 const isAuthorised = async function (req, res, next) {
     try {
         bookId = req.params.bookId;
@@ -33,23 +35,22 @@ const isAuthorised = async function (req, res, next) {
         if (!requiredBook) {
             return res.status(404).send("No such book present ")
         }
-
         const userId = requiredBook.userId
         const token = req.headers["x-api-key"]
 
         const decodedToken = jwt.verify(token, "Project3-78")
-        
+
         if (userId == decodedToken.userId) {
             next()
         }
         else {
-            return res.status(403).send("you are not authorized to take this action")
+            return res.status(403).send({status: false, message: "You are not Authorized to take this action"})
         }
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
 
-
+//======+++++++++========+++++++=========={ Exports }======+++++++========++++++++==========//
 
 module.exports = { isTokenValid, isAuthorised }
