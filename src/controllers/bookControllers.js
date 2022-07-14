@@ -2,16 +2,17 @@ const bookModel = require("../models/booksModel.js")
 const mongoose = require("mongoose");
 const reviewModel = require("../models/reviewModel.js");
 const userModel = require("../models/userModel.js");
+const file =  require("../controllers/aws-file.js");
 
 const myISBN = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
 const myDate = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
-
 
 const isValid = function (value) {
     if (typeof value === "undefined" || value === null) return false;
     if (typeof value === "string" && value.trim().length === 0) return false;
     return true;
 };
+
 
         //======+++++++++========+++++++=========={ Create Book }======+++++++========++++++++==========//
 
@@ -49,6 +50,12 @@ const createBook = async function (req, res) {
         if (releasedAt === null || releasedAt === undefined || releasedAt.trim().length == 0) return res.status(400).send({ status: false, message: "please enter date of release" })
         if (!myDate.test(releasedAt)) return res.status(400).send({ status: false, message: "please enter date in yyyy-mm-dd format only" })
 
+        const files = req.files
+        if(files && files.length>0)   { 
+            var uploadedFileURL= await file.uploadFile( files[0] ) }
+        
+        data.bookCover = uploadedFileURL
+
         let book = await bookModel.create(data)
         return res.status(201).send({ status: true, message: "Success", data: book })
 
@@ -56,7 +63,6 @@ const createBook = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-
 
         //======+++++++++========+++++++=========={ Get Books }======+++++++========++++++++==========//
 

@@ -22,8 +22,7 @@ let uploadFile = async (file) => {
             if (err) {
                 return reject({ "error": err })
             }
-            console.log(data)
-            console.log("file uploaded succesfully")
+          
             return resolve(data.Location)
         })
 
@@ -31,23 +30,24 @@ let uploadFile = async (file) => {
 }
 
 
-const createURL = async function (req, res) {
+// const createURL = async function (req, res) {
 
-    try {
-        let files = req.files
-        if (files && files.length > 0) {
+//     try {
+//         let files = req.files
+//         if (files && files.length > 0) {
           
-            let uploadedFileURL = await uploadFile(files[0])
-            res.status(201).send({ msg: "file uploaded succesfully", data: uploadedFileURL })
-        }
-        else {
-            res.status(400).send({ msg: "No file found" })
-        }
+//             let uploadedFileURL = await uploadFile(files[0])
+//             res.status(201).send({ msg: "file uploaded succesfully", data: uploadedFileURL })
+//         }
+//         else {
+//             res.status(400).send({ msg: "No file found" })
+//         }
 
-    }
-    catch (err) {
-        res.status(500).send({ msg: err })
-    }
-}
+//     }
+//     catch (err) {
+//         res.status(500).send({ msg: err })
+//     }
+// }
 
-module.exports.createURL = createURL
+
+module.exports.uploadFile = uploadFile
